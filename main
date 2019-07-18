@@ -1,0 +1,177 @@
+#include <DynamixelWorkbench.h>
+#if defined(__OPENCM904__) 
+  #define DEVICE_NAME "1"
+#elif defined(__OPENCR__)
+  #define DEVICE_NAME ""
+#endif   
+#define BAUDRATE  1000000
+DynamixelWorkbench dxl_wb;
+
+void setup() { 
+  Serial.begin(1000000);
+  dxl_wb.begin(DEVICE_NAME, BAUDRATE);
+  for(uint8_t i = 1; i<17;i++){
+      dxl_wb.ping(i);
+      dxl_wb.jointMode(i,150);
+  } 
+}
+
+// Takes an array of values as input and passes them to the goalPosition function for each motor.
+void func(int arr[]){
+  for (int i=0; i<16;i++){
+    dxl_wb.goalPosition(i+1 , arr[i]);
+  }
+}
+
+// Array to reach the initial position
+int startPos[] = {712,312,212,812,362,662,512,512,512,512,512,512,512,512,512,512};
+  
+// Arrays corresponding to the 8 steps required for the robot to kneel.
+int kneel1[] = {712,312,212,812,312,712,512,512,562,462,562,462,562,462,512,512};
+int kneel2[] = {712,312,212,812,312,712,512,512,612,412,612,412,612,412,512,512};
+int kneel3[] = {712,312,212,812,312,712,512,512,612,412,662,362,662,362,512,512};
+int kneel4[] = {712,312,212,812,312,712,512,512,562,462,712,312,712,312,512,512};
+int kneel5[] = {712,312,212,812,312,712,512,512,592,432,752,272,712,312,512,512};
+int kneel6[] = {712,312,212,812,312,712,512,512,562,462,812,212,762,262,512,512};
+int kneel7[] = {712,312,212,812,312,712,512,512,562,462,812,212,812,212,512,512};
+int kneel8[] = {712,312,212,812,312,712,512,512,562,462,862,162,812,212,512,512};
+         // Motor  1     2     3     4     5     6     7     8     9    10   11   12   13   14   15   16
+
+// Arrays corresponding to the 7 steps required for the robot to lean forward and pickup the object.
+int pickUp1[] = {712,312,212,812,512,512,512,512,512,512,862,162,812,212,512,512};
+int pickUp2[] = {712,312,212,812,512,512,512,512,462,562,912,112,812,212,512,512};
+int pickUp3[] = {712,312,212,812,512,512,512,512,412,612,912,112,812,212,512,512};
+int pickUp4[] = {712,312,212,812,512,512,512,512,372,652,912,112,812,212,512,512};
+int pickUp5[] = {712,312,212,812,512,512,462,562,372,652,972, 52,782,242,412,612};
+int pickUp6[] = {712,312,212,812,512,512,462,562,202,822,972, 52,782,242,412,612};
+int pickUp7[] = {712,312,212,812,362,662,462,562,192,832,972, 52,782,242,412,612};
+            // Motor  1     2     3     4     5     6     7     8     9    10   11   12   13   14   15   16
+
+// Arrays corresponding to the 4 steps required for the robot to lean forward and put the object on top of 		// the other.
+int drop1[] = {712,312,212,812,362,662,512,512,512,512,862,162,812,212,512,512};
+int drop2[] = {712,312,212,812,362,662,512,512,462,562,912,112,812,212,512,512};
+int drop3[] = {712,312,212,812,362,662,512,512,412,612,912,112,812,212,512,512};
+int drop4[] = {712,312,212,812,542,482,512,512,372,652,912,112,812,212,512,512};
+         // Motor  1     2     3     4     5     6     7     8     9    10   11   12   13   14   15   16
+
+// Arrays corresponding to the 11 steps required for the robot to stand back up after putting the object on 		// top of the other.
+int backUpAgain1[] = {712,312,212,812,542,482,462,562,512,512,912,112,782,242,412,612};
+int backUpAgain2[] = {712,312,212,812,542,482,462,562,512,512,812,212,782,242,412,612};
+int backUpAgain3[] = {712,312,212,812,542,482,462,562,512,512,782,242,742,282,412,612};
+int backUpAgain4[] = {712,312,212,812,542,482,462,562,512,512,782,242,692,332,412,612};
+int backUpAgain5[] = {712,312,212,812,542,482,462,562,362,662,782,242,662,362,412,612};
+int backUpAgain6[] = {712,312,212,812,542,482,462,562,362,662,782,242,622,402,412,612};
+int backUpAgain7[] = {712,312,212,812,542,482,462,562,362,662,702,322,602,422,412,612};
+int backUpAgain8[] = {712,312,212,812,542,482,512,512,362,662,702,322,602,422,512,512};//
+int backUpAgain9[] = {712,312,212,812,512,512,562,462,362,662,702,322,602,422,512,512};//
+int backUpAgain10[]= {712,312,212,812,512,512,512,512,462,562,612,412,562,462,512,512};//
+int backUpAgain11[]= {512,512,212,812,512,512,512,512,492,532,512,512,512,512,512,512};
+                        // Motor  1     2     3     4     5     6     7     8     9    10   11   12   13   14   15   16
+
+// Arrays corresponding to the 11 steps required for the robot to stand back up.
+int standBackUp1[] = {712,312,212,812,362,662,462,562,512,512,972,52,782,242,412,612};
+int standBackUp2[] = {712,312,212,812,362,662,462,562,512,512,812,212,782,242,412,612};
+int standBackUp3[] = {712,312,212,812,362,662,462,562,512,512,782,242,742,282,412,612};
+int standBackUp4[] = {712,312,212,812,362,662,462,562,512,512,782,242,692,332,412,612};
+int standBackUp5[] = {712,312,212,812,362,662,462,562,362,662,782,242,662,362,412,612};
+int standBackUp6[] = {712,312,212,812,362,662,462,562,362,662,782,242,622,402,412,612};
+int standBackUp7[] = {712,312,212,812,362,662,462,562,362,662,702,322,602,422,412,612};
+int standBackUp8[] = {712,312,212,812,362,662,512,512,362,662,702,322,602,422,512,512};
+int standBackUp9[] = {712,312,212,812,362,662,562,462,362,662,702,322,602,422,512,512};
+int standBackUp10[] ={712,312,212,812,362,662,512,512,462,562,612,412,562,462,512,512};
+int standBackUp11[] ={712,312,212,812,362,662,512,512,492,532,512,512,512,512,512,512};
+                       // Motor  1     2     3     4     5     6     7     8     9    10   11   12   13   14   15   16
+
+// Arrays corresponding to the 11 steps required for the robot to make one step.
+int walk1[] = {712,312,212,812,362,662,572,512,562,512,512,512,512,512,572,512};
+int walk2[] = {712,312,212,812,362,662,572,682,562,512,512,512,512,512,592,632};
+int walk3[] = {712,312,212,812,362,662,572,682,562,632,512,512,512,512,592,632};
+int walk4[] = {712,312,212,812,362,662,572,682,562,632,512,512,512,612,592,642};
+int walk5[] = {712,312,212,812,362,662,512,512,562,632,512,462,562,612,512,512};
+int walk6[] = {712,312,212,812,362,662,512,512,562,512,512,512,562,592,512,542};
+   // now bring the back foot forward
+int walk7[] = {712,312,212,812,362,662,512,512,562,512,512,512,562,612,492,512};
+int walk8[] = {712,312,212,812,362,662,512,542,562,592,512,512,562,612,452,462};
+int walk9[] = {712,312,212,812,362,662,512,542,452,592,512,512,512,612,512,462};
+int walk10[] = {712,312,212,812,362,662,512,542,452,592,512,512,512,552,512,512};
+int walk11[] = {512,512,212,812,362,662,512,512,512,512,512,512,512,512,512,512};
+          // Motor  1     2     3     4     5     6     7     8     9    10   11   12   13   14   15   16
+
+/** 
+ * Below are the methods necessary to complete all tasks: 
+ */
+void startPos(){
+   func(startPos);
+}
+
+void kneel(){
+    func(kneel1);delay(1500);func(kneel2);delay(1500);func(kneel3);
+    delay(1500);func(kneel4);delay(1500);func(kneel5);delay(1500);
+    func(kneel6);delay(1500);func(kneel7);delay(1500);func(kneel8); 
+}
+
+void pickUp(){
+    func(pickUp1);delay(500);func(pickUp2);delay(500);
+    func(pickUp3);delay(500);func(pickUp4);delay(500);
+    func(pickUp5);delay(500);func(pickUp6);delay(500);
+    func(pickUp7);
+}
+
+void standBackUp(){
+    func(standBackUp1);delay(500);func(standBackUp2); delay(500);
+    func(standBackUp3);delay(500);func(standBackUp4); delay(500);
+    func(standBackUp5);delay(500);func(standBackUp6); delay(500);
+    func(standBackUp7);delay(500);func(standBackUp8); delay(500);
+    func(standBackUp9);delay(500);func(standBackUp10); delay(500);
+    func(standBackUp11); 
+}
+
+void drop(){
+  func(drop1);delay(500);func(drop2);delay(500);func(drop3);delay(500);
+  func(drop4);delay(500);//func(drop5);
+}
+
+void backUpAgain(){
+    func(backUpAgain1);delay(500);func(backUpAgain2); delay(500);
+    func(backUpAgain3);delay(500);func(backUpAgain4); delay(500);
+    func(backUpAgain5);delay(500);func(backUpAgain6); delay(500);
+    func(backUpAgain7);delay(500);func(backUpAgain8); delay(500);
+    func(backUpAgain9);delay(500);func(backUpAgain10);delay(500);
+    func(backUpAgain11);
+}
+
+void walk(){
+    func(walk1);delay(1000);func(walk2);delay(1000);func(walk3);
+    delay(1000);func(walk4);delay(1000);func(walk5);delay(500);
+    func(walk6);delay(1000);
+       // bringing the back foot forward
+    func(walk7);delay(1000);func(walk8);delay(1000);func(walk9);
+    delay(1000);func(walk10); delay(1000);func(walk11);
+    } 
+}
+
+void loop() {
+    bool endTask = true;
+    delay(5000); // to give some time for my program to be uploaded and avoid my former one to run.
+    startPos();
+    delay(5000); // delay I chose to set between each of the 7 main stages
+    walk();
+    delay(2000);
+    kneel();
+    delay(2000);
+    pickUp();
+    delay(2000);
+    standBackUp();
+    delay(2000);
+    walk();
+    delay(2000);
+    kneel();
+    delay(2000);
+    drop(); 
+    delay(2000);
+    backUpAgain();
+    startPos();
+    while (endTask){
+    }
+}
+// end
