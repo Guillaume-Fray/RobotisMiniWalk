@@ -1,5 +1,5 @@
 # RobotisMiniWalk
-Using Arduino to make a robot walk and carry out a sequence of actions: 
+Using Arduino (C/C++) to make a robot walk and carry out a sequence of actions: 
   . walk
   . crouch
   . catch an object
